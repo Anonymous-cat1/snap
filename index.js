@@ -98,8 +98,8 @@ imgInput.onchange = () => {
     const file = imgInput.files[0];
     if (!file) return;
 
+    statusEl.textContent = "Loading image...";
     const img = new Image();
-    img.src = URL.createObjectURL(file);
     img.onload = () => {
         currentImage = img;
         origResInfo.textContent = `(Original: ${img.naturalWidth}x${img.naturalHeight})`;
@@ -115,7 +115,24 @@ imgInput.onchange = () => {
 
         rebuildParticles();
     };
+    img.onerror = () => {
+        statusEl.textContent = "Error: Could not load the chosen file as an image.";
+    };
+    img.src = URL.createObjectURL(file);
 };
+
+// Preload default sample image (snap.gif)
+const sampleImg = new Image();
+sampleImg.onload = () => {
+    if (!currentImage) {
+        currentImage = sampleImg;
+        origResInfo.textContent = `(Original: ${sampleImg.naturalWidth}x${sampleImg.naturalHeight})`;
+        renderWidthInput.value = sampleImg.naturalWidth;
+        renderHeightInput.value = sampleImg.naturalHeight;
+        rebuildParticles();
+    }
+};
+sampleImg.src = "snap.gif";
 
 // Resolution Listeners
 useOrigResCheckbox.onchange = () => {
@@ -190,7 +207,12 @@ resetDefaultsBtn.onclick = () => {
 
 // Animation and GIF Generation
 async function run() {
-    if (isRendering || !currentImage) return;
+    if (isRendering) return;
+    if (!currentImage) {
+        statusEl.textContent = "Please select an image file first.";
+        imgInput.click();
+        return;
+    }
     isRendering = true;
 
     updateConfigFromUI();
