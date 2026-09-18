@@ -10,7 +10,9 @@ var config = {
     pps: 2/3,
     quality: 10,
     endPause: 0.5,
-    scalePhysics: true
+    scalePhysics: true,
+    scaleImage: true,
+    extendCanvas: false
 };
 
 const dr = Math.pow(0.95, 30);

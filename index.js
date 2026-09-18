@@ -61,6 +61,51 @@ function rebuildParticles() {
     renderWidth = parseInt(renderWidthInput.value, 10) || 160;
     renderHeight = parseInt(renderHeightInput.value, 10) || 160;
 
+    // Determine canvas size, possibly extending with a border
+    const borderSize = config.extendCanvas ? 20 : 0; // 20px border on each side
+    const canvasW = renderWidth + borderSize * 2;
+    const canvasH = renderHeight + borderSize * 2;
+
+    cvs.width = canvasW;
+    cvs.height = canvasH;
+
+    ctx.clearRect(0, 0, canvasW, canvasH);
+    // Draw image respecting scaleImage flag
+    const imgDrawW = config.scaleImage ? renderWidth : currentImage.naturalWidth;
+    const imgDrawH = config.scaleImage ? renderHeight : currentImage.naturalHeight;
+    const offsetX = borderSize + Math.max(0, Math.floor((canvasW - imgDrawW) / 2));
+    const offsetY = borderSize + Math.max(0, Math.floor((canvasH - imgDrawH) / 2));
+    ctx.drawImage(currentImage, offsetX, offsetY, imgDrawW, imgDrawH);
+
+    // Update config from UI after possible changes
+    updateConfigFromUI();
+
+    particles = [];
+    // Use canvas dimensions for particle generation to match rendering area
+    const imgData = ctx.getImageData(0, 0, canvasW, canvasH).data;
+    for (let i = 0; i < canvasW; ++i) {
+        for (let j = 0; j < canvasH; ++j) {
+            const idx = 4 * (j * canvasW + i);
+            const alpha = imgData[idx + 3];
+            if (alpha === 0) continue;
+            const color = [imgData[idx], imgData[idx + 1], imgData[idx + 2], alpha];
+            particles.push(new Particle(i, j, color, canvasW, canvasH, config));
+        }
+    }
+
+    maxDist = Math.sqrt(Math.pow(canvasW, 2) + Math.pow(2 * canvasH, 2));
+    fn = (p) => Math.pow(p.x, 2) + Math.pow(p.y + canvasH, 2);
+
+    particles.sort((a, b) => fn(a) - fn(b));
+
+    statusEl.textContent = `Ready: ${canvasW}x${canvasH} (${particles.length} particles)`;
+    goBtn.disabled = false;
+}
+    if (!currentImage) return;
+
+    renderWidth = parseInt(renderWidthInput.value, 10) || 160;
+    renderHeight = parseInt(renderHeightInput.value, 10) || 160;
+
     cvs.width = renderWidth;
     cvs.height = renderHeight;
 
