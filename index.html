@@ -1,23 +1,75 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="UTF-8">
-        
+        <title>snap</title>
         <link rel="stylesheet" href="style.css" />
         <script src="gif.js"></script>
     </head>
 
     <body>
-        <canvas id="image" class="image-display"></canvas>
+        <div class="container">
+            <div class="display-area">
+                <div>
+                    <div>Input</div>
+                    <canvas id="image" class="image-display"></canvas>
+                </div>
+                <div>
+                    <div>Result</div>
+                    <img id="result" class="image-display" />
+                </div>
+            </div>
 
-        <div class="button-div">
-            <input id="img-input" type="file" accept="image/*" />
-            <button id="go">Go</button>
+            <div class="controls">
+                <div class="row">
+                    <input id="img-input" type="file" accept="image/*" />
+                    <button id="go" disabled>Go</button>
+                    <a id="download-btn" class="hidden" download="snap.gif">Download GIF</a>
+                </div>
+
+                <div id="status">Select an image to start</div>
+
+                <fieldset>
+                    <legend>Resolution</legend>
+                    <div class="field">
+                        <label>Width: <input id="render-width" type="number" min="1" value="160" /></label>
+                        <label>Height: <input id="render-height" type="number" min="1" value="160" /></label>
+                    </div>
+                    <div class="field">
+                        <label><input id="use-orig-res" type="checkbox" /> Use original resolution</label>
+                        <span id="orig-res-info"></span>
+                    </div>
+                    <div class="field">
+                        <label><input id="lock-aspect" type="checkbox" checked /> Lock aspect ratio</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Variables</legend>
+                    <div class="field">
+                        <label>Framerate (fps): <input id="fps-input" type="number" min="1" max="60" value="20" /></label>
+                        <label>Speed: <input id="speed-input" type="number" step="0.05" min="0.1" max="5" value="1.25" /></label>
+                    </div>
+                    <div class="field">
+                        <label>Wave speed (pps): <input id="pps-input" type="number" step="0.05" min="0.05" value="0.67" /></label>
+                        <label>Spread (vx): <input id="vx-input" type="number" min="0" value="60" /></label>
+                        <label>Gravity: <input id="gravity-input" type="number" min="0" value="150" /></label>
+                    </div>
+                    <div class="field">
+                        <label><input id="scale-physics" type="checkbox" checked /> Scale physics with resolution</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Output</legend>
+                    <div class="field">
+                        <label>Quality (1-20): <input id="quality-input" type="number" min="1" max="20" value="10" /></label>
+                        <label>End pause (s): <input id="pause-input" type="number" step="0.1" min="0" value="0.5" /></label>
+                        <button id="reset-defaults" type="button">Reset to defaults</button>
+                    </div>
+                </fieldset>
+            </div>
         </div>
-
-
-        <img id="result" class="image-display" />
 
         <script src="particle.js"></script>
         <script src="index.js"></script>
